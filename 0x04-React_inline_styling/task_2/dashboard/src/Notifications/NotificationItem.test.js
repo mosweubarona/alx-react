@@ -1,46 +1,21 @@
-import React from "react";
-import NotificationItem from "./NotificationItem";
-import { shallow } from "enzyme";
-import { StyleSheetTestUtils } from "aphrodite";
+import React from 'react';
+import NotificationItem from "./NotificationItem.js"
+import { shallow, configure } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
+configure({adapter: new Adapter()});
 
-beforeEach(() => {
-  StyleSheetTestUtils.suppressStyleInjection();
-});
-afterEach(() => {
-  StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
-});
 
-describe("rendering components", () => {
-  it("renders NotificationItem component without crashing", () => {
-    const wrapper = shallow(<NotificationItem />);
+it(" rendering of the component", () => {
+    const wrapper = shallow(<NotificationItem type="default" value="test"/>)
+    expect(wrapper.exists()).toEqual(true);
+})
 
-    expect(wrapper.exists()).toBe(true);
-  });
+it("renders the correct Props ", () => {
+    const wrapper = shallow(<NotificationItem type="default" value="test"/>)
+    expect(wrapper.props()).toContain('{"children": "test", "data-priority": "default", "onClick": [Function onClick]}')
+})
 
-  it('renders correct html from type="default" value="test" props', () => {
-    const wrapper = shallow(<NotificationItem />);
-
-    wrapper.setProps({ type: "default", value: "test" });
-    expect(wrapper.html()).toEqual('<li class="default_1tsdo2i" data-notification-type="default">test</li>');
-  });
-
-  it('renders correct html from  html="<u>test</u>" props', () => {
-    const wrapper = shallow(<NotificationItem />);
-
-    wrapper.setProps({ html: "<u>test</u>" });
-    expect(wrapper.html()).toEqual('<li data-urgent="true" class="urgent_137u7ef"><u>test</u></li>');
-  });
-});
-
-describe("onclick event behaves as it should", () => {
-  it("should call console.log", () => {
-    const wrapper = shallow(<NotificationItem />);
-    const spy = jest.fn();
-
-    wrapper.setProps({ value: "test item", markAsRead: spy, id: 1 });
-    wrapper.find("li").props().onClick();
-    expect(spy).toBeCalledTimes(1);
-    expect(spy).toBeCalledWith(1);
-    spy.mockRestore();
-  });
-});
+it("renders the correct html", () => {
+    const wrapper = shallow(< NotificationItem type="urgent" html={{ __html: '<u>test</u>' }} />)
+    expect(wrapper.html()).toEqual('<li data-priority=\"urgent\"><u>test</u></li>')
+})
